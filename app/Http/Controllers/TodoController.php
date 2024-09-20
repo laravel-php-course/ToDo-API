@@ -35,7 +35,7 @@ class TodoController extends Controller
      */
     public function show(Todo $todo)
     {
-        //
+        return response()->json($todo);
     }
 
     /**
@@ -43,7 +43,17 @@ class TodoController extends Controller
      */
     public function update(Request $request, Todo $todo)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body'  => 'nullable|string',
+            'status'=> 'in:todo,in-progress,done',
+        ]);
+        $todo = new Todo();
+        $todo->user_id = $request->input('user_id',1);
+        $todo->title = $request->input('title');
+        $todo->body = $request->input('body');
+        $todo->status = $request->input('status','todo');
+        return response()->json($todo);
     }
 
     /**
@@ -51,6 +61,7 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        //
+        $todo->delete();
+        return response()->json(["message"=>'todo deleted']);
     }
 }

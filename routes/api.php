@@ -28,5 +28,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * DELETE /todos/todo_id             => delete todo
  */
 
-Route::post('/todos', [TodoController::class, 'store']);
-
+Route::apiResource('/todos', TodoController::class);

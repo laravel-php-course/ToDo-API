@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateTodoRequest;
 use App\Models\Todo;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,8 @@ class TodoController extends Controller
      */
     public function index()
     {
-        //
+        $todos = Todo::all();
+        return response()->json($todos);
     }
 
     /**
@@ -20,13 +22,8 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        $todo = Todo::create([
-            'user_id' => $request->input('user_id', 1),
-            'title'   => $request->input('title'),
-            'body'    => $request->input('body'),
-            'status'  => $request->input('status', 'todo')
-        ]);
-
+        Todo::newTodo($request);
+        $todo = Todo::orderBy('id' , 'desc')->first();
         return response()->json($todo);
     }
 
@@ -35,15 +32,16 @@ class TodoController extends Controller
      */
     public function show(Todo $todo)
     {
-        //
+        return response()->json($todo);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Todo $todo)
+    public function update(UpdateTodoRequest $request, Todo $todo)
     {
-        //
+        $todo->updateTodo($request);
+        return response()->json($todo);
     }
 
     /**
@@ -51,6 +49,8 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        //
+        $todoTitle = $todo->title ;
+        $todo->delete();
+        return response()->json('todo `'.$todoTitle.'` has been deleted');
     }
 }

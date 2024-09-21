@@ -13,9 +13,7 @@ class TodoController extends Controller
      */
     public function index()
     {
-        $all_data_in_todo_list =  Todo::all('todos');
-
-        return response()->json($all_data_in_todo_list);
+        //
     }
 
     /**
@@ -38,9 +36,7 @@ class TodoController extends Controller
      */
     public function show(Todo $todo, Request $request )
     {
-        $spcific_resource = Todo::where('user_id', '=',$request->input(1));
-
-        return response()->json($spcific_resource);
+         //
     }
 
     /**
@@ -48,24 +44,7 @@ class TodoController extends Controller
      */
     public function update(Request $request, Todo $todo)
     {
-        //validation 
-
-        $this->validate($request,[
-            'title' => 'required',
-            'status' => 'required',
-            'body'=>'required',
-            'schedule_time'=>'required'
-        ]);
-
-        $record = Todo::find(1,); 
-        $record->update([  
-            'title' => $request->title,  
-            'status' => $request->status, 
-            'body' => $request->body,
-            'schedule_time' =>$request->schedule_time,
-        ]);  
-
-        return $record ;
+         //
     }
 
     /**
@@ -73,10 +52,6 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        $deleting_row = Todo::where('user_id','=',1);
-        return $deleting_row->delete();
-
-        
-
+     //
     }
 }

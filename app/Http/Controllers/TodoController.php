@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Symfony\Component\Console\Input\Input;
 
 class TodoController extends Controller
 {
-    /**
+    /** 
      * Display a listing of the resource.
      */
     public function index()
@@ -33,9 +34,9 @@ class TodoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Todo $todo)
+    public function show(Todo $todo, Request $request )
     {
-        //
+         //
     }
 
     /**
@@ -43,7 +44,7 @@ class TodoController extends Controller
      */
     public function update(Request $request, Todo $todo)
     {
-        //
+         //
     }
 
     /**
@@ -51,6 +52,6 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        //
+     //
     }
 }

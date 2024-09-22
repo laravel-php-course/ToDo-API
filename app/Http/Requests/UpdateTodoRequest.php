@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\DB;
 
 class UpdateTodoRequest extends FormRequest
 {
@@ -21,13 +22,25 @@ class UpdateTodoRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+    protected function getMaxLengthForTitle()
+    {
+        $result = DB::select("
+            SELECT CHARACTER_MAXIMUM_LENGTH
+            FROM information_schema.columns
+            WHERE table_name = 'todos'
+            AND column_name = 'title'
+        ");
+
+        return $result[2]->CHARACTER_MAXIMUM_LENGTH ;
+    }
+
     public function rules(): array
     {
         return [
-//            'todo'  => 'required|exists:todos,id|numeric' ,
-            'title' => 'nullable|string|max:128' ,
-            'body' => 'nullable|string' ,
-            'schedule_time' => 'nullable|date'
+            'title' => 'required|string|max:'.$this->getMaxLengthForTitle(),
+            'body'  => 'string',
+            'status'=> 'in:todo,in-progress,done',
+            'schedule_time' => 'nullable'
         ];
     }
 

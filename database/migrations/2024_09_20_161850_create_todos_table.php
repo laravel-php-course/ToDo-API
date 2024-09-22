@@ -15,7 +15,7 @@ return new class extends Migration
             $table->engine = "InnoDB";
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->string('title', length: 128);
+            $table->string('title', length: 256);
             $table->enum('status', ['todo', 'done', 'in-progress', 'delete']);
             $table->text('body');
             $table->dateTime('schedule_time')->nullable();

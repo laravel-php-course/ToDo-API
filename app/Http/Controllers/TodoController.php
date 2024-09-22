@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateTodoRequest;
+use App\Http\Requests\UpdateTodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Todo;
 use App\Trait\ApiResponse;
@@ -16,13 +17,7 @@ class TodoController extends Controller
      */
     public function index()
     {
-        try {
-            $todos = Todo::all();
-            return $this->success('ok', TodoResource::collection($todos));
-        }
-        catch (\Exception $exception) {
-            return $this->error($exception->getMessage(), 500);
-        }
+        return $this->success('ok', TodoResource::collection(Todo::all()));
     }
 
     /**
@@ -30,14 +25,7 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
-        $todo = Todo::create([
-            'user_id' => $request->input('user_id', 1),
-            'title'   => $request->input('title'),
-            'body'    => $request->input('body'),
-            'status'  => $request->input('status', 'todo')
-        ]);
-
-        return response()->json($todo);
+       return Todo::newTodo($request);
     }
 
     /**
@@ -51,19 +39,9 @@ class TodoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Todo $todo) //TODO ceate cusstome validation
+    public function update(UpdateTodoRequest $request, Todo $todo) //TODO ceate cusstome validation //done
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'body'  => 'string',
-            'status'=> 'in:todo,in-progress,done',
-        ]);
-        $todo->title = $request->title;
-        $todo->body = $request->body;
-        $todo->status = $request->status;
-        $todo->save();
-
-        return response()->json($todo);
+       return $todo->updateTodo($request);
     }
 
     /**

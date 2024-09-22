@@ -2,28 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateTodoRequest;
+use App\Http\Requests\CreateTodoRequest;
+use App\Http\Resources\TodoResource;
 use App\Models\Todo;
+use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    use ApiResponse;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $todos = Todo::all();
-        return response()->json($todos);
+        try {
+            $todos = Todo::all();
+            return $this->success('ok', TodoResource::collection($todos));
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateTodoRequest $request)
     {
-        Todo::newTodo($request);
-        $todo = Todo::orderBy('id' , 'desc')->first();
+        $todo = Todo::create([
+            'user_id' => $request->input('user_id', 1),
+            'title'   => $request->input('title'),
+            'body'    => $request->input('body'),
+            'status'  => $request->input('status', 'todo')
+        ]);
+
         return response()->json($todo);
     }
 
@@ -32,15 +45,24 @@ class TodoController extends Controller
      */
     public function show(Todo $todo)
     {
-        return response()->json($todo);
+        return $this->success('ok', new TodoResource($todo));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTodoRequest $request, Todo $todo)
+    public function update(Request $request, Todo $todo) //TODO ceate cusstome validation
     {
-        $todo->updateTodo($request);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'body'  => 'string',
+            'status'=> 'in:todo,in-progress,done',
+        ]);
+        $todo->title = $request->title;
+        $todo->body = $request->body;
+        $todo->status = $request->status;
+        $todo->save();
+
         return response()->json($todo);
     }
 
@@ -49,8 +71,7 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        $todoTitle = $todo->title ;
         $todo->delete();
-        return response()->json('todo `'.$todoTitle.'` has been deleted');
+        return response("Todo ID: {$todo->id} deleted");
     }
 }

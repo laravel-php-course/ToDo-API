@@ -21,15 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 /**
- * GET    /todos                     => get All Todos done
- * GET    /todos/todo_id             => get specific done
- * POST   /todos                     => new record done
- * PUT    /todos/todo_id             => update done
- * DELETE /todos/todo_id             => delete done
+ * GET    /todos                     => get All Todos
+ * GET    /todos/todo_id             => get specific todo
+ * POST   /todos                     => new record todo
+ * PUT    /todos/todo_id             => update todo
+ * DELETE /todos/todo_id             => delete todo
  */
 
-Route::get('/todos', [TodoController::class, 'index']);
-Route::get('/todos/{todo}', [TodoController::class, 'show']);
-Route::post('/todos', [TodoController::class, 'store']);
-Route::put('/todos/{todo}', [TodoController::class, 'update']);
-Route::delete('/todos/{todo}', [TodoController::class, 'destroy']);
+Route::apiResource('/todos', TodoController::class);

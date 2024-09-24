@@ -4,7 +4,7 @@ namespace App\Trait;
 
 trait ApiResponse
 {
-    public function success(string $message = '', $data = [], int $code = 200)
+    public static function success(string $message = '', $data = [], int $code = 200)
     {
         return response()->json([
             'success' => true,

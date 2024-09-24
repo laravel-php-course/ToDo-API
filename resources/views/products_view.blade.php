@@ -39,7 +39,7 @@
             </p>
         </div>
         <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-            <a href="${user.id}" class="bg-blue-600 text-white p-2">بیشتر</a>
+            <a href="/products/${user.id}" class="bg-blue-600 text-white p-2">بیشتر</a>
         </div>
     </div>
 </li>

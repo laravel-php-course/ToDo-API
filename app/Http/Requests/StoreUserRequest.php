@@ -3,16 +3,15 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Todo;
 
-class UpdateTodoRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        // return auth()->user()->id == ;
+        return true;
     }
 
     /**
@@ -23,9 +22,9 @@ class UpdateTodoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:' . Todo::TITLE_MAX_LENGTH,
-            'body'  => 'nullable|string|max:' . Todo::BODY_MAX_LENGTH,
-            'status'=> 'in:' . implode(',', Todo::STATUSES),
+            'name'     => 'required|string',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8' //Add Rules or regex type : Check password strong :*{}@# Asa 121
         ];
     }
 }

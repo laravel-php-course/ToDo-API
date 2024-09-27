@@ -6,19 +6,28 @@ use App\Http\Requests\CreateTodoRequest;
 use App\Http\Requests\UpdateTodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Todo;
+use App\Repositories\TodoRepository;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    //TODO add try catch to all methods
     use ApiResponse;
+    private TodoRepository $repository;
+
+    public function __construct(TodoRepository $todoRepository)
+    {
+        $this->repository = $todoRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         try {
-            $todos = Todo::all();
+            $todos = $this->repository->getAllTodos();
             return $this->success('ok', TodoResource::collection($todos));
         }
         catch (\Exception $exception) {
@@ -31,14 +40,9 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
-        $todo = Todo::create([
-            'user_id' => $request->input('user_id', 1),
-            'title'   => $request->input('title'),
-            'body'    => $request->input('body'),
-            'status'  => $request->input('status', 'todo')
-        ]);
+        $todo = $this->repository->create($request->all());
 
-        return response()->json($todo);
+        return $this->success('todo created', new TodoResource($todo));
     }
 
     /**
@@ -46,37 +50,23 @@ class TodoController extends Controller
      */
     public function show(Todo $todo , Request $request)
     {
-        // return response()->json($todo);
         return $this->success('ok', new TodoResource($todo));
     }
 
     /**
      * Update the specified resource in storage.
      */
-/**
- * Update the specified resource in storage.
- */
-public function update(UpdateTodoRequest  $request, Todo $todo) //TODO create custom validation
-{
+    public function update(UpdateTodoRequest  $request, Todo $todo)
+    {
+        $todo->user_id = $request->input('user_id', 1);
+        $todo->title = $request->input('title');
+        $todo->body = $request->input('body');
+        $todo->status = $request->input('status', 'todo');
 
+        $todo->save();
 
-    // $this->update([
-    //     "title" => request()->has("title") ? request()->title : $this->title,
-    //     "body" => request()->has("body") ? request()->body : $this->body
-    // ])
-    $todo->user_id = $request->input('user_id', 1);
-    $todo->title = $request->input('title');
-    $todo->body = $request->input('body');
-    $todo->status = $request->input('status', 'todo');
-
-    // Save the updated Todo instance
-    $todo->save();
-
-    // Return a JSON response with the updated Todo
-    // return response()->json($todo);
-    return $this->success('ok', new TodoResource($todo));
-
-}
+        return $this->success('ok', new TodoResource($todo));
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -85,7 +75,6 @@ public function update(UpdateTodoRequest  $request, Todo $todo) //TODO create cu
     {
         $todo->delete();
 
-        return response()->json(["message"=>'todo deleted']);
-        // return response("Todo ID: {$todo->id} deleted");
+        return $this->success("todo {$todo->id} deleted");
     }
 }

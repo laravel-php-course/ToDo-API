@@ -28,4 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
  * DELETE /todos/todo_id             => delete todo
  */
 
-Route::apiResource('/todos', TodoController::class);
+// Route::post('/todos', [TodoController::class, 'store']);
+// Route::get("/todos",[TodoController::class,"index"]);
+// Route::get("/todos/{todo}",[TodoController::class,"show"]);
+// Route::put("/todos/{todo}",[TodoController::class,"update"]);
+// Route::delete("/todos/{todo}",[TodoController::class,"destroy"]);
+
+Route::apiResource('/todos',TodoController::class);

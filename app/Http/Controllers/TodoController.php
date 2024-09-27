@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateTodoRequest;
+use App\Http\Requests\UpdateTodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Todo;
 use App\Trait\ApiResponse;
@@ -43,28 +44,39 @@ class TodoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Todo $todo)
+    public function show(Todo $todo , Request $request)
     {
+        // return response()->json($todo);
         return $this->success('ok', new TodoResource($todo));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Todo $todo) //TODO ceate cusstome validation
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'body'  => 'string',
-            'status'=> 'in:todo,in-progress,done',
-        ]);
-        $todo->title = $request->title;
-        $todo->body = $request->body;
-        $todo->status = $request->status;
-        $todo->save();
+/**
+ * Update the specified resource in storage.
+ */
+public function update(UpdateTodoRequest  $request, Todo $todo) //TODO create custom validation
+{
 
-        return response()->json($todo);
-    }
+
+    // $this->update([
+    //     "title" => request()->has("title") ? request()->title : $this->title,
+    //     "body" => request()->has("body") ? request()->body : $this->body
+    // ])
+    $todo->user_id = $request->input('user_id', 1);
+    $todo->title = $request->input('title');
+    $todo->body = $request->input('body');
+    $todo->status = $request->input('status', 'todo');
+
+    // Save the updated Todo instance
+    $todo->save();
+
+    // Return a JSON response with the updated Todo
+    // return response()->json($todo);
+    return $this->success('ok', new TodoResource($todo));
+
+}
 
     /**
      * Remove the specified resource from storage.
@@ -72,6 +84,8 @@ class TodoController extends Controller
     public function destroy(Todo $todo)
     {
         $todo->delete();
-        return response("Todo ID: {$todo->id} deleted");
+
+        return response()->json(["message"=>'todo deleted']);
+        // return response("Todo ID: {$todo->id} deleted");
     }
 }

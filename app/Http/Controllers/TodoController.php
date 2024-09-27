@@ -25,7 +25,7 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
-       return Todo::newTodo($request);
+       return self::success('todo just created', new TodoResource( Todo::newTodo($request)));
     }
 
     /**
@@ -41,7 +41,7 @@ class TodoController extends Controller
      */
     public function update(UpdateTodoRequest $request, Todo $todo) //TODO ceate cusstome validation //done
     {
-       return $todo->updateTodo($request);
+       return self::success('todo just updated', $todo->updateTodo($request));
     }
 
     /**

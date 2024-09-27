@@ -15,13 +15,13 @@ class Todo extends Model
 
     public static function newTodo(Request $request)
     {
-       return self::success('todo just created', new TodoResource(Todo::create([
+       return Todo::create([
            'user_id' => $request->input('user_id', 1),
            'title' => $request->input('title'),
            'body' => $request->input('body'),
            'status' => $request->input('status', 'todo'),
            'schedule_time' => $request->input('schedule_time', null)
-       ])));
+       ]);
     }
 
     public function updateTodo(Request $request)
@@ -31,6 +31,6 @@ class Todo extends Model
         $this->status = $request->status;
         $this->schedule_time = $request->schedule_time;
         $this->save();
-        return self::success('todo just updated', new TodoResource($this));
+        return new TodoResource($this);
     }
 }

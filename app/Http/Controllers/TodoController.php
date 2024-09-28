@@ -6,18 +6,33 @@ use App\Http\Requests\CreateTodoRequest;
 use App\Http\Requests\UpdateTodoRequest;
 use App\Http\Resources\TodoResource;
 use App\Models\Todo;
+use App\Repositories\TodoRepository;
 use App\Trait\ApiResponse;
 use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    //TODO add try catch to all methods
     use ApiResponse;
+    private TodoRepository $repository;
+
+    public function __construct(TodoRepository $todoRepository)
+    {
+        $this->repository = $todoRepository;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return $this->success('ok', TodoResource::collection(Todo::all()));
+        try {
+            $todos = $this->repository->getAllTodos();
+            return $this->success('ok', TodoResource::collection($todos));
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
@@ -25,13 +40,15 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
-       return self::success('todo just created', new TodoResource( Todo::newTodo($request)));
+        $todo = $this->repository->create($request->all());
+
+        return $this->success('todo created', new TodoResource($todo));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Todo $todo)
+    public function show(Todo $todo , Request $request)
     {
         return $this->success('ok', new TodoResource($todo));
     }
@@ -39,9 +56,16 @@ class TodoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTodoRequest $request, Todo $todo) //TODO ceate cusstome validation //done
+    public function update(UpdateTodoRequest  $request, Todo $todo)
     {
-       return self::success('todo just updated', $todo->updateTodo($request));
+        $todo->user_id = $request->input('user_id', 1);
+        $todo->title = $request->input('title');
+        $todo->body = $request->input('body');
+        $todo->status = $request->input('status', 'todo');
+
+        $todo->save();
+
+        return $this->success('ok', new TodoResource($todo));
     }
 
     /**
@@ -50,6 +74,7 @@ class TodoController extends Controller
     public function destroy(Todo $todo)
     {
         $todo->delete();
-        return response("Todo ID: {$todo->id} deleted");
+
+        return $this->success("todo {$todo->id} deleted");
     }
 }

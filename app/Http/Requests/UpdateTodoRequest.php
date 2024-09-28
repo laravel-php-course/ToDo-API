@@ -2,10 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\DB;
+use App\Models\Todo;
 
 class UpdateTodoRequest extends FormRequest
 {
@@ -14,7 +12,7 @@ class UpdateTodoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        // return auth()->user()->id == ;
     }
 
     /**
@@ -22,33 +20,12 @@ class UpdateTodoRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    protected function getMaxLengthForTitle()
-    {
-        $result = DB::select("
-            SELECT CHARACTER_MAXIMUM_LENGTH
-            FROM information_schema.columns
-            WHERE table_name = 'todos'
-            AND column_name = 'title'
-        ");
-
-        return $result[2]->CHARACTER_MAXIMUM_LENGTH ;
-    }
-
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:'.$this->getMaxLengthForTitle(),
-            'body'  => 'string',
-            'status'=> 'in:todo,in-progress,done',
-            'schedule_time' => 'nullable'
+            'title' => 'required|string|max:' . Todo::TITLE_MAX_LENGTH,
+            'body'  => 'nullable|string|max:' . Todo::BODY_MAX_LENGTH,
+            'status'=> 'in:' . implode(',', Todo::STATUSES),
         ];
-    }
-
-    public function failedValidation(Validator $Validator)
-    {
-        throw new HttpResponseException(response()->json([
-            'data' => $Validator->errors()
-        ])) ;
-
     }
 }

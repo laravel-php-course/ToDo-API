@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
-    //TODO add try catch to all methods
+
     use ApiResponse;
     private TodoRepository $repository;
 
@@ -40,9 +40,14 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
+        try {
         $todo = $this->repository->create($request->all());
-
         return $this->success('todo created', new TodoResource($todo));
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
+
     }
 
     /**
@@ -50,7 +55,12 @@ class TodoController extends Controller
      */
     public function show(Todo $todo , Request $request)
     {
+        try {
         return $this->success('ok', new TodoResource($todo));
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
@@ -58,6 +68,7 @@ class TodoController extends Controller
      */
     public function update(UpdateTodoRequest  $request, Todo $todo)
     {
+        try {
         $todo->user_id = $request->input('user_id', 1);
         $todo->title = $request->input('title');
         $todo->body = $request->input('body');
@@ -66,6 +77,11 @@ class TodoController extends Controller
         $todo->save();
 
         return $this->success('ok', new TodoResource($todo));
+
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
@@ -73,8 +89,13 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
+        try {
         $todo->delete();
 
         return $this->success("todo {$todo->id} deleted");
+        }
+        catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 }

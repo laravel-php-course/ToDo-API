@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 
 class StoreUserRequest extends FormRequest
 {
@@ -24,7 +27,15 @@ class StoreUserRequest extends FormRequest
         return [
             'name'     => 'required|string',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8' //Add Rules or regex type : Check password strong :*{}@# Asa 121
-        ];
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+                 ];
+
+    }
+    public function failedValidation(Validator $Validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'data' => $Validator->errors()
+        ])) ;
+
     }
 }

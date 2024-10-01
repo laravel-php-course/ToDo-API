@@ -4,17 +4,17 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Todo;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 
-class UpdateTodoRequest extends FormRequest
+class loginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-       return true;
+        return true;
     }
 
     /**
@@ -25,12 +25,10 @@ class UpdateTodoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:' . Todo::TITLE_MAX_LENGTH,
-            'body'  => 'nullable|string|max:' . Todo::BODY_MAX_LENGTH,
-            'status'=> 'in:' . implode(',', Todo::STATUSES),
-        ];
+            'email'    => 'required|email|exists:users,email',
+            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()->uncompromised()],
+              ];
     }
-
 
     public function failedValidation(Validator $Validator)
     {

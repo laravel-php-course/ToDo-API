@@ -46,7 +46,9 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => null     ,   // default laravel expiration set as null
+    'ac_expiration' => 60,              // One hour
+    'rt_expiration' => 7 * 24 * 60,  // 7 Days
 
     /*
     |--------------------------------------------------------------------------
@@ -79,5 +81,7 @@ return [
         'encrypt_cookies' => App\Http\Middleware\EncryptCookies::class,
         'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
     ],
+
+
 
 ];

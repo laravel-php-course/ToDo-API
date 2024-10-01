@@ -36,6 +36,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route::put("/todos/{todo}",[TodoController::class,"update"]);
 // Route::delete("/todos/{todo}",[TodoController::class,"destroy"]);
 
-Route::apiResource('/todos',TodoController::class)->middleware('auth:sanctum');
+Route::apiResource('/todos',TodoController::class)->middleware(['auth:sanctum', 'ability:access-api']);
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/refresh', [AuthController::class, 'refreshToken'])->middleware('auth:sanctum', 'ability:issue-access-token');
+Route::post('/logOut', [AuthController::class, 'logOut'])->middleware('auth:sanctum');

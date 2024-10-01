@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 use App\Models\Todo;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateTodoRequest extends FormRequest
 {
@@ -27,5 +29,12 @@ class CreateTodoRequest extends FormRequest
             'body'  => 'nullable|string|max:' . Todo::BODY_MAX_LENGTH,
             'status'=> 'in:' . implode(',', Todo::STATUSES),
         ];
+    }
+    public function failedValidation(Validator $Validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'data' => $Validator->errors()
+        ])) ;
+
     }
 }

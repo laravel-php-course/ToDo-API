@@ -3,7 +3,8 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Hash;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserRepository
 
@@ -17,5 +18,15 @@ class UserRepository
         ]);
 
         return $user;
+    }
+
+    public function LoginUser(array $data)
+    {
+        $user = User::where('email',$data['email'])->first();
+        if (!Hash::check($data['password'] , $user->password)){
+            return False;
+        }else{
+       return  $user ;
+        }
     }
 }

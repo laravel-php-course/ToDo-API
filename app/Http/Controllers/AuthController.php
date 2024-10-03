@@ -50,7 +50,7 @@ class AuthController extends Controller
     }
     public function logOut(Request $request)
     {
-        auth()->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
         return $this->success('شما از حسابتان خارج شدید');
     }
 

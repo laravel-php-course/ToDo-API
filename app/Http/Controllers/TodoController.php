@@ -69,13 +69,8 @@ class TodoController extends Controller
     public function update(UpdateTodoRequest  $request, Todo $todo)
     {
         try {
-        $todo->user_id = $request->input('user_id', 1);
-        $todo->title = $request->input('title');
-        $todo->body = $request->input('body');
-        $todo->status = $request->input('status', 'todo');
 
-        $todo->save();
-
+        $this->repository->update($request , $todo);
         return $this->success('ok', new TodoResource($todo));
 
         }

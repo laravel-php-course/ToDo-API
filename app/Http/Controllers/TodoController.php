@@ -40,32 +40,43 @@ class TodoController extends Controller
      */
     public function store(CreateTodoRequest $request)
     {
-        $todo = $this->repository->create($request->all());
-
-        return $this->success('todo created', new TodoResource($todo));
+        try {
+            $todo = $this->repository->create($request->all());
+            return $this->success('todo created', new TodoResource($todo));
+        } catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Todo $todo , Request $request)
+    public function show(Todo $todo, Request $request)
     {
-        return $this->success('ok', new TodoResource($todo));
+        try {
+            return $this->success('ok', new TodoResource($todo));
+        } catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTodoRequest  $request, Todo $todo)
+    public function update(UpdateTodoRequest $request, Todo $todo)
     {
-        $todo->user_id = $request->input('user_id', 1);
-        $todo->title = $request->input('title');
-        $todo->body = $request->input('body');
-        $todo->status = $request->input('status', 'todo');
+        try {
+            $todo->user_id = $request->input('user_id', 1);
+            $todo->title = $request->input('title');
+            $todo->body = $request->input('body');
+            $todo->status = $request->input('status', 'todo');
 
-        $todo->save();
+            $todo->save();
 
-        return $this->success('ok', new TodoResource($todo));
+            return $this->success('ok', new TodoResource($todo));
+        } catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 
     /**
@@ -73,8 +84,11 @@ class TodoController extends Controller
      */
     public function destroy(Todo $todo)
     {
-        $todo->delete();
-
-        return $this->success("todo {$todo->id} deleted");
+        try {
+            $todo->delete();
+            return $this->success("todo {$todo->id} deleted");
+        } catch (\Exception $exception) {
+            return $this->error($exception->getMessage(), 500);
+        }
     }
 }

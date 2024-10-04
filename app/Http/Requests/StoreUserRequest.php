@@ -24,7 +24,15 @@ class StoreUserRequest extends FormRequest
         return [
             'name'     => 'required|string',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8' //Add Rules or regex type : Check password strong :*{}@# Asa 121
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-z]/',
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[@$!%*?&]/',
+            ],
         ];
     }
 }
